@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Балансировщик Нагрузки</title>
+</head>
+<body>
+    <h1>Балансировщик Нагрузки</h1>
+    <h2>Добавить новый инстанс</h2>
+    <form id="addInstanceForm">
+        <input type="text" id="ip" placeholder="IP" required>
+        <input type="text" id="port" placeholder="Порт" required>
+        <button type="submit">Добавить инстанс</button>
+    </form>
+    
+    <h2>Текущие инстансы</h2>
+    <ul id="instanceList">
+      {% for instance in instances %}
+        <li>{{ instance }} <button onclick="removeInstance({{ loop.index0 }})">Удалить</button></li>
+      {% endfor %}
+    </ul>
+
+    <script>
+    document.getElementById('addInstanceForm').onsubmit = function(e) {
+        e.preventDefault();
+        const ip = document.getElementById('ip').value;
+        const port = document.getElementById('port').value;
+
+        fetch('/add_instance', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ip: ip, port: port})
+        }).then(response => {
+            if (response.ok) {
+                location.reload();
+            }
+        });
+    };
+
+    function removeInstance(index) {
+        fetch('/remove_instance', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({index: index})
+        }).then(response => {
+            if (response.ok) {
+                location.reload();
+            }
+        });
+    }
+    </script>
+</body>
+</html>
+
